@@ -1,0 +1,22 @@
+{
+  "name": "intecu-network-test",
+  "version": "1.0.0",
+  "description": "OAU Network support tool",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adisen/intecu-app.git"
+  },
+  "author": "IT STUDENTS (2018/2019)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adisen/intecu-app/issues"
+  },
+  "homepage": "https://github.com/adisen/intecu-app#readme",
+  "devDependencies": {
+    "electron": "^8.0.0"
+  }
+}
