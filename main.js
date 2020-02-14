@@ -4,7 +4,7 @@ const si = require('systeminformation')
 const { app, BrowserWindow, Menu, ipcMain, ipcRenderer } = require('electron')
 
 // Get system details
-function getSystemInformation() {
+const  getSystemInformation = async () => {
   // Processor type, IP Address, RAM, System Model, OS,
   try {
     const systemData = await si.system();
@@ -48,10 +48,14 @@ app.on('ready', () => {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('app/index.html')
 
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate)
   Menu.setApplicationMenu(mainMenu)
+
+  const data = 'We are trying to send this to the frontend'
+
+  mainWindow.webContents.send('test', data)
 })
 
 // Quit when all windows are closed.
@@ -97,3 +101,8 @@ if(process.env.NODE_ENV !== 'production'){
     }]
   })
 }
+
+ipcMain.on('synchronous-message', (event, arg) => {
+  // console.log(arg) // prints "ping"
+  event.returnValue = process.platform
+})
