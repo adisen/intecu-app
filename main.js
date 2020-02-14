@@ -1,30 +1,61 @@
 const electron = require('electron')
+const si = require('systeminformation')
 
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain, ipcRenderer } = require('electron')
 
-function createWindow () {
-  // Create the browser window.
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+// Get system details
+function getSystemInformation() {
+  // Processor type, IP Address, RAM, System Model, OS,
+  try {
+    const systemData = await si.system();
+    const manufacturer = systemData.manufacturer
+    const model = systemData.model;
+
+    const cpuData = await si.cpu();
+    const cpuName = cpuData.manufacturer + ' ' + cpuData.brand;
+    const cpuSpeed = cpuData.speed
+
+    const osInfo = await si.osInfo();
+
+  } catch (err) {
+    console.log(err);
+  }
+
+}
+
+// Function to get the network details
+const getNetworkDetails = async () => {
+  // IP Address, SSID, Network Speed,
+  try {
+    const networkData = await si.networkInterfaces();
+    const ipAddress = networkData.ip4;
+    const SSID = networkData.ifaceName
+    const Speed = networkData.speed
+  } catch (err) {
+    console.log(err);
+  }
+  
+}
+
+// Load main window when ready
+app.on('ready', () => {
+  const mainWindow = new BrowserWindow({
+    width: 1024,
+    height: 800,
     webPreferences: {
       nodeIntegration: true
     }
   })
 
   // and load the index.html of the app.
-  win.loadFile('index.html')
+  mainWindow.loadFile('index.html')
 
-  // Open the DevTools.
-  win.webContents.openDevTools()
-}
-
-app.whenReady().then(createWindow)
+  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate)
+  Menu.setApplicationMenu(mainMenu)
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -38,5 +69,31 @@ app.on('activate', () => {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.gt=
+const mainMenuTemplate = [
+  {
+  label: 'Help',
+  role: 'help'
+},
+{
+  role: 'reload'
+}
+]
+
+// If MacOS, add emplty object to shift the menu
+if(process.platform == 'darwin'){
+  mainMenuTemplate.unshift({});
+}
+
+// Add developer tools in development mode
+if(process.env.NODE_ENV !== 'production'){
+  mainMenuTemplate.push({
+    label: 'Developer Tools',
+    submenu: [{
+      label: "Toggle Developer Tools",
+      accelerator: process.platform == 'darwim' ? 'Command+I' : 'Ctrl+I',
+      click(item, focusedWindow){
+        focusedWindow.toggleDevTools();
+      }
+    }]
+  })
+}
