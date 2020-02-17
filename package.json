@@ -20,6 +20,7 @@
     "systeminformation": "^4.21.2"
   },
   "devDependencies": {
-    "electron": "^7.0.0"
+    "electron": "^7.0.0",
+    "electron-packager": "^14.2.1"
   }
 }
