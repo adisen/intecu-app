@@ -1,8 +1,16 @@
-// In renderer process (web page).
-const { ipcRenderer } = require('electron')
-const data = ipcRenderer.sendSync('synchronous-message', 'ping') // prints "pong"
+/** @format */
 
-// const div = document.querySelector('#test');
-const div = document.getElementById('test')
+// Renderer process (web page).
+const { ipcRenderer } = require('electron');
 
-div.innerHTML = data;
+// Getting system details from the main process
+ipcRenderer.on('getSystemDetails', event => {
+  console.log(arg);
+});
+ipcRenderer.send('system-message');
+
+// Getting network details from the main process
+ipcRenderer.on('getNetworkDetails', (event, arg) => {
+  console.log(arg);
+});
+ipcRenderer.send('netowrk-message');
