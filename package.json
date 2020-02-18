@@ -19,11 +19,11 @@
     "url": "https://github.com/adisen/intecu-app/issues"
   },
   "homepage": "https://github.com/adisen/intecu-app#readme",
-  "devDependencies": {
-    "electron": "^7.0.0",
-    "electron-packager": "^8.1.0"
-  },
   "dependencies": {
     "systeminformation": "^4.21.2"
+  },
+  "devDependencies": {
+    "electron": "^7.0.0",
+    "electron-packager": "^14.2.1"
   }
 }
