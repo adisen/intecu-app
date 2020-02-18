@@ -4,7 +4,7 @@
 const electron = require('electron');
 const si = require('systeminformation');
 
-const { app, BrowserWindow, Menu, ipcMain, ipcRenderer } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain } = electron;
 
 // Get system details
 const getSystemInformation = async () => {
