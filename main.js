@@ -17,12 +17,14 @@ const getSystemInformation = async () => {
     const cpuData = await si.cpu();
     const cpuName = cpuData.manufacturer + ' ' + cpuData.brand;
     const cpuSpeed = cpuData.speed;
+    const operatingSystem = (await si.osInfo()).platform;
 
     return {
       manufacturer,
       model,
       cpuName,
-      cpuSpeed
+      cpuSpeed,
+      operatingSystem
     };
   } catch (err) {
     console.log(err);
