@@ -3,6 +3,8 @@
 // Main Process
 const electron = require('electron');
 const si = require('systeminformation');
+const os = require('os');
+const exec = require('child_process').exec;
 
 const { app, BrowserWindow, Menu, ipcMain } = electron;
 
@@ -11,20 +13,30 @@ const getSystemInformation = async () => {
   // Processor type, IP Address, RAM, System Model, OS,
   try {
     const systemData = await si.system();
-    const manufacturer = systemData.manufacturer;
+    const systemManufacturer = systemData.manufacturer;
     const model = systemData.model;
+    const host = await os.hostname();
 
     const cpuData = await si.cpu();
-    const cpuName = cpuData.manufacturer + ' ' + cpuData.brand;
+    const cpuManufacturer = cpuData.manufacturer;
+    const cpuBrand = cpuData.brand;
     const cpuSpeed = cpuData.speed;
     const operatingSystem = (await si.osInfo()).platform;
+    const operatingSystemName = (await si.osInfo()).distro;
+    const operatingSystemType = (await si.osInfo()).arch;
+    const RAM = await Math.round((await si.mem()).total/(1073741824))+' GB';
 
     return {
-      manufacturer,
+      systemManufacturer,
+      cpuManufacturer,
+      cpuBrand,
       model,
-      cpuName,
       cpuSpeed,
-      operatingSystem
+      operatingSystem,
+      operatingSystemName,
+      operatingSystemType,
+      RAM,
+      host,
     };
   } catch (err) {
     console.log(err);
@@ -35,28 +47,47 @@ const getSystemInformation = async () => {
 const getNetworkInformation = async () => {
   // IP Address, SSID, Network Speed,
   try {
+
     const networkData = await si.networkInterfaces();
-    const ipAddress = networkData[1].ip4;
+    // const ipAddress = networkData[1].ip4;
     const gateway = await si.networkGatewayDefault();
-    const SSID = networkData[1].ifaceName;
-    const speed = networkData[1].speed;
+    const siteTest = await si.inetChecksite('www.youtube.com');
+
+    const latency = await si.inetLatency();
+
+    for (let index = 0; index < networkData.length; index++) {
+      interface = networkData[index];
+      if(interface.mac){
+        netInterface = interface;
+        ipAddress = netInterface.ip4;
+        break;
+      }
+    }
+    
+    const SSID = netInterface.ifaceName;
+    const speed = netInterface.speed+' Kb/s';
 
     return {
       ipAddress,
       gateway,
       SSID,
-      speed
+      siteTest,
+      latency,
+      netInterface,
+      speed,
     };
   } catch (err) {
     console.log(err);
+    return null;
   }
 };
 
 // Load main window when ready
 app.on('ready', () => {
-  const mainWindow = new BrowserWindow({
-    width: 1024,
+  let mainWindow = new BrowserWindow({
+    width: 800,
     height: 800,
+    // show: false,
     webPreferences: {
       nodeIntegration: true
     }
@@ -71,6 +102,14 @@ app.on('ready', () => {
   const data = 'We are trying to send this to the frontend';
 
   mainWindow.webContents.send('test', data);
+
+  mainWindow.on('closed', ()=>{
+    mainWindow = null;
+  });
+
+  // mainWindow.once('ready-to-show', ()=>{
+  //   mainWindow.show();
+  // });
 });
 
 // Quit when all windows are closed.
