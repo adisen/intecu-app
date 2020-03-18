@@ -1,6 +1,16 @@
 /** @format */
 
 const shell = require('electron').shell;
+const { ipcRenderer } = require('electron');
+
+//importing modules
+import {getIntranetTest} from './intranet.js';
+import {getInternetTest} from './internet.js';
+// const setDownloadSpeed = import('./download.js');
+// const setBrowsingSpeed = import('./browse.js');
+// const generateReport = import('./report.js');
+// const mailReport = import('./mail.js');
+
 // Get elements from DOM
 let systemManufacturer = document.querySelector('#systemManufacturer');
 let cpuManufacturer = document.querySelector('#cpuManufacturer');
@@ -11,101 +21,109 @@ let OSName = document.querySelector('#OSName');
 let OSType = document.querySelector('#OSType');
 let RAM = document.querySelector('#RAM');
 let host = document.querySelector('#host');
-
+let date = document.querySelector('#date');
 
 let ipAddress = document.querySelector('#ipAddress');
 let gateway = document.querySelector('#gateway');
 let speed = document.querySelector('#speed');
 let login = document.querySelector('#login');
+login.disabled = true;
 let continual = document.querySelector('#continual');
+continual.disabled = true;
 let latency = document.querySelector('#latency');
 let connectionInterface = document.querySelector('#connectionInterface');
 let message = document.querySelector('#message');
 let ping = document.querySelector('#ping');
-// Renderer process (web page).
-const { ipcRenderer } = require('electron');
+
+let systemDet = false;
+let systemDetData;
+let intranetDet = false;
+let internetDet = false;
+let networkDet = false;
+let networkDetData;
+
 
 // Getting system details from the main process
 ipcRenderer.on('getSystemDetails', (event, arg) => {
-  // console.log(arg);
-  host.innerHTML = arg.host;
-  systemManufacturer.innerHTML = arg.systemManufacturer;
-  cpuManufacturer.innerHTML = arg.cpuManufacturer;
-  cpuSpeed.innerHTML = arg.cpuSpeed;
-  cpuBrand.innerHTML = arg.cpuBrand;
-  OS.innerHTML = arg.operatingSystem;
-  OSName.innerHTML = arg.operatingSystemName;
-  OSType.innerHTML = arg.operatingSystemType;
-  RAM.innerHTML = arg.RAM;
+    // console.log(arg);
+    date.innerHTML = arg.date;
+    host.innerHTML = arg.host;
+    systemManufacturer.innerHTML = arg.systemManufacturer;
+    cpuManufacturer.innerHTML = arg.cpuManufacturer;
+    cpuSpeed.innerHTML = arg.cpuSpeed;
+    cpuBrand.innerHTML = arg.cpuBrand;
+
+    if(arg.operatingSystem == 'darwin'){
+        OS.innerHTML = 'MAC';
+    } else if(arg.operatingSystem == 'win32'){
+        OS.innerHTML = 'Windows';
+    } else if(arg.operatingSystem == 'linux') {
+        OS.innerHTML = 'Linux';
+    }
+
+    OSName.innerHTML = arg.operatingSystemName;
+    OSType.innerHTML = arg.operatingSystemType;
+    RAM.innerHTML = arg.RAM;
+  
+    systemDetData = arg;
+    systemDet = true;
 });
 ipcRenderer.send('system-message');
 
 // Getting network details from the main process
-ipcRenderer.on('getNetworkDetails', (event, arg) => {
-  // console.log(arg);
-  if(arg){
-    ipAddress.innerHTML = arg.ipAddress;
-    gateway.innerHTML = arg.gateway;
-    speed.innerHTML = arg.speed;
-    latency.innerHTML = arg.latency;
-
-    if(arg.netInterface.type == 'wireless'){
-      connectionInterface.innerHTML = 'Wireless'
-    } else{
-      connectionInterface .innerHTML = 'LAN'
-    }
-    console.log(arg.siteTest);
-    if(arg.siteTest.ok){
-      message.innerHTML = 'You\'re Logged in, Continue to Browse.';
-    } else{
-      message.innerHTML = 'You\'re not Logged in, Click the Login button below.';
-    }
-  }
-});
-try {
-  ipcRenderer.send('netowrk-message');
-} catch (error) {
-  console.log(error);
-}
-
-
-
-
-setInterval(() => {
-  // Getting network details from the main process
-  ipcRenderer.on('getNetworkDetails', (event, arg) => {
+ipcRenderer.on('getNetworkDetails', async (event, arg) => {
     // console.log(arg);
     if(arg){
-      ipAddress.innerHTML = arg.ipAddress;
-      gateway.innerHTML = arg.gateway;
-      speed.innerHTML = arg.speed;
-      latency.innerHTML = arg.latency;
+        ipAddress.innerHTML = arg.ipAddress;
+        gateway.innerHTML = arg.gateway;
+        speed.innerHTML = arg.speed;
+        latency.innerHTML = arg.latency;
 
-      if(arg.netInterface.type == 'wireless'){
+        if(arg.netInterface.type == 'wireless'){
         connectionInterface.innerHTML = 'Wireless'
-      } else{
+        } else{
         connectionInterface .innerHTML = 'LAN'
-      }
-      console.log(arg.siteTest);
-      if(arg.siteTest.status == 404){
-        message.innerHTML = 'You\'re not Logged in, Click the Login button below.';
-      } else{
-        message.innerHTML = 'You\'re Logged in, Continue to Browse.';
-      }
-      ping.innerHTML = arg.ping;
+        }
+        console.log(arg.siteTest);
+        if(arg.siteTest.ok){
+            message.innerHTML = 'You\'re Logged in, Continue to Browse.';
+            continual.disabled = false;
+        } else{
+            message.innerHTML = 'You\'re not Logged in, Click the Login button below.';
+            login.disabled = false;
+        }
+        ping.innerHTML = ping;
+
+        networkDetData = arg;
+        networkDet = true;
     }
-    
-  });
-  ipcRenderer.send('netowrk-message');
 
-}, 15000);
+    if(systemDet && networkDet){
 
-
+        await getIntranetTest().then((result) => {
+            console.log('Test completed...');
+            console.log(result);
+            ipcRenderer.on('generatePDF', async (event, arg) => {
+                console.log(arg);
+            });
+            ipcRenderer.send('getPDF');
+        }).catch((error) => {
+            console.log('Test crashed...');
+            console.log(error);
+        });
+        // await getInternetTest();
+    }
+});
+try {
+    ipcRenderer.send('netowrk-message');
+} catch (error) {
+    console.log(error);
+}
 
 login.addEventListener('click',($event)=>{
-  shell.openExternal('https://gateway.oauife.edu.ng/');
+    shell.openExternal('https://');
 });
 
 continual.addEventListener('click',($event)=>{
-  shell.openExternal('https://gateway.oauife.edu.ng/');
+    shell.openExternal('https://');
 });

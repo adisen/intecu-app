@@ -5,7 +5,7 @@
     <title>INTECU Network Test</title>
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="./main.css">
   </head>
   <body>
   <div class="main">
@@ -16,10 +16,33 @@
         </div>
           <p>INTECU, OAU</p>
       </div>
+
+      <div class="test-container">
+        <div class="container-title">
+            <p><span id="testType"></span> Speed Test</p>
+        </div>
+        <div class="field">
+            <p class="value" id="down"></p>
+            <p class="key">Download Speed</p>
+        </div>
+        <div class="field" >
+            <p class="value"id="browse"></p>
+            <p class="key">Browsing Speed</p>
+        </div>
+        <div class="field" >
+            <p class="value"id="up"></p>
+            <p class="key">Upload Speed</p>
+        </div>
+      </div>
+
       <div class="container">
           <div class="container1">
               <div class="container-title">
                   <p>System Details</p>
+              </div>
+              <div class="field" >
+                <p class="value"id="date"></p>
+                <p class="key">Date</p>
               </div>
               <div class="field" >
                 <p class="value"id="host"></p>
@@ -101,6 +124,6 @@
       </div>
   </div>
 
-    <script src="js/render.js"></script>
+    <script src="./js/render.js" type="module"></script>
   </body>
 </html>

@@ -87,6 +87,18 @@ body{
     justify-content: space-around;
 }
 
+.test-container{
+    background-color: white;
+    display: flex;
+    width: calc(100% - 100px);
+    padding: 20px 50px;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.test-container .field{align-self: center;}
+.test-container .key{color: green; font-weight: bold;}
+
 .container1, .container2{
     display: flex;
     flex-flow: column;
