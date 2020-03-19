@@ -1,30 +1,24 @@
 import {setDownloadSpeed} from './download.js';
 import {setBrowsingSpeed} from './browse.js';
-import {mailReport} from './mail.js';
-import {generateReport} from './report.js';
+
 
 export async function getInternetTest(){
-    const b_speed = setBrowsingSpeed().then(
-        (result) => {
-            console.log(result);
-        }
-    )
+    const b_speed = setBrowsingSpeed();
+    const d_speed = setDownloadSpeed();
+    
+    const [browse,down] = await Promise.all([d_speed,b_speed]);
 
-    const d_speed = setDownloadSpeed().then(
-        (result) => {
-            console.log(result);
-        }
-    )
-
-    generateReport().then(
-        (result) => {
-            console.log(result);
-        }
-    )
-
-    mailReport().then(
-        (result) => {
-            console.log(result);
-        }
-    )
+    console.log(browse,down);
+    if(browse.success && down.success){
+        return({
+            'completion'    :   true,
+            'down'  :   down.speed,
+            'browse'    :   browse.speed,
+        });
+    } else{
+        console.log('Speed Test crashed...');
+        return({
+            'completion' :   false,
+        });
+    }
 } 

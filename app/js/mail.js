@@ -17,15 +17,15 @@ export async function mailReport(){
             });
         
             const message = {
-                from: 'aderinlokunoluwaseun@gmail.com',
+                from: '',
                 to: 'aderinlokunoluwaseun@gmail.com',
                 subject: 'My first Node mail',
                 html: '<h1>The First Node Mail</h1><p>I\'m doing <b>well</b> today!</p>',
                 attachments: [
                     { // Use a URL as an attachment
-                    filename: 'report.pdf',
-                    path: path_to_report+'report.pdf'
-                }
+                        filename: 'report.pdf',
+                        path: path_to_report+'report.pdf'
+                    }
                 ]
             };
 
@@ -40,10 +40,10 @@ export async function mailReport(){
                 } else {
                     console.log(info);
                     console.log('mailing was successful...');
-                    return {
+                    resolve({
                         'path_to_report'    :   path_to_report+'report.pdf',
                         'success': true,
-                    };
+                    });
                 }
             });
         } catch{

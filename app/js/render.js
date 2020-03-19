@@ -6,10 +6,9 @@ const { ipcRenderer } = require('electron');
 //importing modules
 import {getIntranetTest} from './intranet.js';
 import {getInternetTest} from './internet.js';
-// const setDownloadSpeed = import('./download.js');
-// const setBrowsingSpeed = import('./browse.js');
-// const generateReport = import('./report.js');
-// const mailReport = import('./mail.js');
+
+import {mailReport} from './mail.js';
+const fs = require('fs');
 
 // Get elements from DOM
 let systemManufacturer = document.querySelector('#systemManufacturer');
@@ -34,6 +33,11 @@ let latency = document.querySelector('#latency');
 let connectionInterface = document.querySelector('#connectionInterface');
 let message = document.querySelector('#message');
 let ping = document.querySelector('#ping');
+
+let browse = document.querySelector('#browse');
+let down = document.querySelector('#down');
+let up = document.querySelector('#up');
+let err = document.querySelector('#err');
 
 let systemDet = false;
 let systemDetData;
@@ -103,15 +107,77 @@ ipcRenderer.on('getNetworkDetails', async (event, arg) => {
         await getIntranetTest().then((result) => {
             console.log('Test completed...');
             console.log(result);
+
+            browse.innerHTML = result.browse;
+            down.innerHTML = result.down;
+            up.innerHTML = up.up;
+
             ipcRenderer.on('generatePDF', async (event, arg) => {
                 console.log(arg);
+
+                const mail = await mailReport();
+
+                console.log(mail);
+
+                try{
+                    fs.unlink('report.pdf', (error) => {
+                        if(error){
+                            console.log(error);
+                        }
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
             });
-            ipcRenderer.send('getPDF');
+            ipcRenderer.send('getPDF',{
+                'down'   :   result.down,
+                'browse' :   result.browse
+            });
         }).catch((error) => {
             console.log('Test crashed...');
+            err.innerHTML = "Test has crashed! Try to reload..."
             console.log(error);
         });
-        // await getInternetTest();
+
+        if(arg.siteTest.status != 404){
+            continual.disabled = false;
+            await getInternetTest().then((result) => {
+                console.log('Test completed...');
+                console.log(result);
+    
+                browse.innerHTML = result.browse;
+                down.innerHTML = result.down;
+                up.innerHTML = up.up;
+    
+                ipcRenderer.on('generatePDF', async (event, arg) => {
+                    console.log(arg);
+    
+                    const mail = await mailReport();
+    
+                    console.log(mail);
+    
+                    try{
+                        fs.unlink('report.pdf', (error) => {
+                            if(error){
+                                console.log(error);
+                            }
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                });
+                ipcRenderer.send('getPDF',{
+                    'down'   :   result.down,
+                    'browse' :   result.browse
+                });
+            }).catch((error) => {
+                console.log('Test crashed...');
+                err.innerHTML = "Test has crashed! Try to reload..."
+                console.log(error);
+            });
+        } else{
+            login.disabled = false;
+        }
     }
 });
 try {

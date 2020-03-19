@@ -27,7 +27,7 @@ export function setBrowsingSpeed(){
                     console.log('browsing speed successful...');
                     resolve({
                         'success'   :   true,
-                        'browsingSpeed' :   browsingSpeed,
+                        'speed' :   browsingSpeed,
                     });
                 }
             }

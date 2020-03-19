@@ -80,9 +80,18 @@ export async function setDownloadSpeed(){
                 },
             }).then(() => {
                 console.log("Download speed successful");
+                try{
+                    fs.unlink('download.jpeg', (error) => {
+                        if(error){
+                            console.log(error);
+                        }
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
                 resolve({
                     'success'   :   true,
-                    'downloadSpeed' :   downloadSpeed,
+                    'speed' :   downloadSpeed,
                 });
             }).catch(() => {
                 console.log('download speed crashed...');
