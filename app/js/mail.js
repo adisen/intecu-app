@@ -11,8 +11,8 @@ export async function mailReport(){
                 port: 587,
                 secure: false,
                 auth: {
-                user: 'aderinlokunoluwaseun@gmail.com',
-                pass: 'gmail08@'
+                user: '',
+                pass: ''
                 }
             });
         
