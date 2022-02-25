@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/adisen/intecu-app#readme",
   "dependencies": {
-    "systeminformation": "^5.3.1"
+    "systeminformation": "^5.6.4"
   },
   "devDependencies": {
     "electron": "^11.5.0",
