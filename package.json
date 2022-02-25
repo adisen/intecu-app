@@ -25,7 +25,7 @@
   "devDependencies": {
     "electron": "^9.4.0",
     "electron-packager": "^14.2.1",
-    "nodemailer": "^6.4.5",
+    "nodemailer": "^6.6.1",
     "pdfkit": "^0.11.0",
     "request": "^2.88.2",
     "xmlhttprequest": "^1.8.0"
