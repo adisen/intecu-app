@@ -23,8 +23,8 @@
     "systeminformation": "^5.6.4"
   },
   "devDependencies": {
-    "electron": "^13.6.6",
-    "electron-packager": "^14.2.1",
+    "electron": "^22.0.2",
+    "electron-packager": "^17.1.1",
     "nodemailer": "^6.6.1",
     "pdfkit": "^0.11.0",
     "request": "^2.88.2",
